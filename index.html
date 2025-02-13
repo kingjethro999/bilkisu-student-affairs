@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Affairs Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./css/style.css">
+    <style>
+        :root {
+            --sidebar-width: 250px;
+            --header-height: 60px;
+            --primary-color: #dc3545;
+            --transition-speed: 0.3s;
+        }
+
+        /* Layout */
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            background-color: #fff;
+            border-right: 1px solid #dee2e6;
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+            transition: transform var(--transition-speed);
+        }
+
+        .logo-area {
+            height: var(--header-height);
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem;
+        }
+
+        .logo-img {
+            max-height: 70px;
+            width: auto;
+            object-fit: contain;
+        }
+
+        .close-sidebar {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            border: none;
+            background: none;
+            display: none;
+        }
+
+        .nav-links {
+            padding: 1rem;
+            flex-grow: 1;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: #495057;
+            text-decoration: none;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            transition: background-color var(--transition-speed);
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: #fee2e2;
+            color: #495057;
+        }
+
+        .nav-link i {
+            width: 1.5rem;
+            margin-right: 1rem;
+            text-align: center;
+        }
+
+        .logout-container {
+            padding: 1rem;
+            border-top: 1px solid #dee2e6;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex-grow: 1;
+            margin-left: var(--sidebar-width);
+            transition: margin-left var(--transition-speed);
+        }
+
+        /* Header */
+        .dashboard-header {
+            height: var(--header-height);
+            position: fixed;
+            top: 0;
+            right: 0;
+            left: var(--sidebar-width);
+            background-color: #fff;
+            border-bottom: 1px solid #dee2e6;
+            padding: 0 1rem;
+            display: flex;
+            align-items: center;
+            z-index: 999;
+            transition: left var(--transition-speed);
+        }
+
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            padding: 0.5rem;
+        }
+
+        .search-input {
+            max-width: 500px;
+            margin: 0 auto;
+            border-radius: 50rem;
+        }
+
+        .profile-link {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+        }
+
+        /* Dashboard Content */
+        .dashboard-content {
+            padding: 2rem;
+            margin-top: var(--header-height);
+        }
+
+        /* Cards */
+        .stat-card,
+        .content-card {
+            background-color: #fff;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            padding: 1.5rem;
+            height: 100%;
+        }
+
+        .stat-card {
+            display: flex;
+            align-items: center;
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+        }
+
+        .stat-details h6 {
+            margin-bottom: 0.25rem;
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+
+        .stat-details h3 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .content-card .card-header {
+            padding: 0 0 1rem 0;
+            background: none;
+            border: none;
+        }
+
+        .content-card .card-header h5 {
+            margin: 0;
+        }
+
+        /* Department Stats */
+        .department-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .department-stat:last-child {
+            border-bottom: none;
+        }
+
+        /* Announcements */
+        .announcement {
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .announcement:last-of-type {
+            border-bottom: none;
+        }
+
+        .announcement h6 {
+            margin-bottom: 0.25rem;
+        }
+
+        .announcement-meta {
+            font-size: 0.875rem;
+            color: #6c757d;
+            margin-bottom: 0.5rem;
+        }
+
+        .announcement-content {
+            margin-bottom: 0;
+        }
+
+        /* Overlay */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        /* Responsive */
+        /* Responsive */
+        @media (max-width: 991.98px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .dashboard-header {
+                left: 0;
+            }
+
+            .mobile-toggle,
+            .close-sidebar {
+                display: block;
+            }
+
+            .search-input {
+                max-width: 100%;
+            }
+
+            .stat-card {
+                padding: 1rem;
+            }
+
+            .stat-icon {
+                font-size: 1.5rem;
+            }
+
+            .stat-details h3 {
+                font-size: 1.25rem;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            .dashboard-content {
+                padding: 1rem;
+            }
+
+            .stat-card {
+                margin-bottom: 1rem;
+            }
+
+            .content-card {
+                margin-bottom: 1.5rem;
+            }
+
+            .department-stat {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 0.75rem 0;
+            }
+
+            .department-stat .badge {
+                margin-top: 0.5rem;
+            }
+
+            .announcement h6 {
+                font-size: 1rem;
+            }
+
+            .announcement-meta {
+                font-size: 0.75rem;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .dashboard-header .row {
+                gap: 0.5rem;
+            }
+
+            .col-6.col-md-8 {
+                order: 3;
+                width: 100%;
+            }
+
+            .profile-avatar {
+                width: 35px;
+                height: 35px;
+            }
+
+            .stat-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .stat-icon {
+                margin: 0 0 0.5rem 0;
+            }
+
+            .card-header {
+                padding: 1rem;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+        }
+
+        /* Animation Classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+
+            .sidebar,
+            .dashboard-header,
+            .mobile-toggle,
+            .close-sidebar,
+            .sidebar-overlay {
+                display: none !important;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .dashboard-content {
+                margin-top: 0;
+                padding: 0;
+            }
+
+            .stat-card,
+            .content-card {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #dee2e6;
+            }
+
+            .announcement {
+                break-inside: avoid;
+            }
+        }
+
+        /* Utility Classes */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .overflow-hidden {
+            overflow: hidden !important;
+        }
+
+        /* Dark Mode Support */
+        @media (prefers-color-scheme: light) {
+
+            .sidebar,
+            .dashboard-header,
+            .stat-card,
+            .content-card {
+                background-color: #1a1a1a;
+                border-color: #2d2d2d;
+            }
+
+            .nav-link {
+                color: #e0e0e0;
+            }
+
+            .nav-link:hover,
+            .nav-link.active {
+                background-color: #2d2d2d;
+                color: #ffffff;
+            }
+
+            .department-stat,
+            .announcement {
+                border-color: #2d2d2d;
+            }
+
+            .announcement-meta {
+                color: #a0a0a0;
+            }
+
+            .search-input {
+                background-color: #2d2d2d;
+                border-color: #3d3d3d;
+                color: #ffffff;
+            }
+
+            .search-input::placeholder {
+                color: #a0a0a0;
+            }
+        }
+
+        /* Accessibility Improvements */
+        .nav-link:focus,
+        .search-input:focus,
+        .mobile-toggle:focus,
+        .close-sidebar:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        .nav-link:focus:not(:focus-visible),
+        .search-input:focus:not(:focus-visible),
+        .mobile-toggle:focus:not(:focus-visible),
+        .close-sidebar:focus:not(:focus-visible) {
+            outline: none;
+        }
+
+        /* Loading States */
+        .content-loading {
+            position: relative;
+            min-height: 200px;
+        }
+
+        .content-loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg,
+                    rgba(255, 255, 255, 0),
+                    rgba(255, 255, 255, 0.2),
+                    rgba(255, 255, 255, 0));
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <!-- Logo Area -->
+            <div class="brand-header d-flex align-items-center justify-content-center">
+                <img src="../img/upscaled_lincoln.jpg" class="img-fluid p-2 h-auto brand-logo">
+            </div>
+
+            <button class="close-sidebar" id="closeSidebar">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <!-- Navigation Links -->
+            <nav class="nav-links">
+                <a href="index.html" class="nav-link active">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="announcements.html" class="nav-link">
+                    <i class="fas fa-bullhorn"></i>
+                    <span>Announcements</span>
+                </a>
+                <a href="student-records.html" class="nav-link">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>Student Records</span>
+                </a>
+                <a href="hostel-applications.html" class="nav-link">
+                    <i class="fas fa-building"></i>
+                    <span>Hostel Applications</span>
+                </a>
+                <a href="complaints.html" class="nav-link">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span>Student Complaints</span>
+                </a>
+                <a href="departments.html" class="nav-link">
+                    <i class="fas fa-university"></i>
+                    <span>Departments</span>
+                </a>
+                <a href="events.html" class="nav-link">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Events Calendar</span>
+                </a>
+                <a href="reports.html" class="nav-link">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports</span>
+                </a>
+            </nav>
+
+            <div class="logout-container">
+                <a href="../logout.html" class="nav-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <header class="dashboard-header">
+                <div class="container-fluid">
+                    <div class="row align-items-center">
+                        <div class="col">
+                            <button class="mobile-toggle" id="sidebarToggle">
+                                <i class="fas fa-bars"></i>
+                            </button>
+                        </div>
+                        <div class="col-6 col-md-8">
+                            <input type="text" class="form-control search-input" placeholder="Search...">
+                        </div>
+                        <div class="col">
+                            <a href="profile.html" class="profile-link">
+                                <div class="profile-avatar"></div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="dashboard-content">
+                <!-- Quick Stats Row -->
+                <div class="row g-4 mb-4">
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="stat-card">
+                            <div class="stat-icon text-primary">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h6>Total Students</h6>
+                                <h3>2</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="stat-card">
+                            <div class="stat-icon text-success">
+                                <i class="fas fa-building"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h6>Hostel Applications</h6>
+                                <h3>24</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="stat-card">
+                            <div class="stat-icon text-warning">
+                                <i class="fas fa-exclamation-circle"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h6>Active Complaints</h6>
+                                <h3>12</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-xl-3">
+                        <div class="stat-card">
+                            <div class="stat-icon text-danger">
+                                <i class="fas fa-bullhorn"></i>
+                            </div>
+                            <div class="stat-details">
+                                <h6>Announcements</h6>
+                                <h3>8</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Two Column Layout -->
+                <div class="row g-4">
+                    <!-- Department Statistics -->
+                    <div class="col-12 col-lg-6">
+                        <div class="content-card">
+                            <div class="card-header">
+                                <h5>Students by Department</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="department-stat">
+                                    <span>Pre med</span>
+                                    <span class="badge bg-primary">0 students</span>
+                                </div>
+                                <div class="department-stat">
+                                    <span>Mass Comm</span>
+                                    <span class="badge bg-primary">0 students</span>
+                                </div>
+                                <div class="department-stat">
+                                    <span>Business Operations</span>
+                                    <span class="badge bg-primary">0 students</span>
+                                </div>
+                                <div class="department-stat">
+                                    <span>Computer Software Engineering</span>
+                                    <span class="badge bg-primary">2 students</span>
+                                </div>
+                                <div class="department-stat">
+                                    <span>Psychology</span>
+                                    <span class="badge bg-primary">0 students</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Announcements -->
+                    <div class="col-12 col-lg-6">
+                        <div class="content-card">
+                            <div class="card-header">
+                                <h5>Recent Announcements</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="announcement">
+                                    <h6>affairs</h6>
+                                    <p class="announcement-meta">Posted by Japheth Jerry on Feb 08, 2025</p>
+                                    <p class="announcement-content">hii</p>
+                                </div>
+                                <div class="announcement">
+                                    <h6>affairs</h6>
+                                    <p class="announcement-meta">Posted by Japheth Jerry on Feb 08, 2025</p>
+                                    <p class="announcement-content">hii</p>
+                                </div>
+                                <div class="announcement">
+                                    <h6>affairs</h6>
+                                    <p class="announcement-meta">Posted by Japheth Jerry on Feb 08, 2025</p>
+                                    <p class="announcement-content">hii</p>
+                                </div>
+                                <a href="announcements.html" class="btn btn-primary btn-sm">View All Announcements</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script src="./javascript/script.js"></script>
+</body>
+
+</html>
